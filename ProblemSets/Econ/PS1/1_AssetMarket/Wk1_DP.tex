@@ -1,0 +1,118 @@
+\documentclass[letterpaper,12pt]{article}
+\usepackage{array}
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{}
+\cfoot{}
+\rfoot{\footnotesize\textsl{Page \thepage\ of \pageref{LastPage}}}
+\renewcommand\headrulewidth{0pt}
+\renewcommand\footrulewidth{0pt}
+\usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+\usepackage{listings}
+\lstset{frame=single,
+  language=Python,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{harvard}
+\usepackage{setspace}
+\usepackage{float,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=red,urlcolor=blue}
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{derivation}{Derivation} % Number derivations on their own
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}{Proposition} % Number propositions on their own
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+%\numberwithin{equation}{section}
+\bibliographystyle{aer}
+\newcommand\ve{\varepsilon}
+\newcommand\boldline{\arrayrulewidth{1pt}\hline}
+
+
+\begin{document}
+
+\begin{flushleft}
+  \textbf{\large{Homework 1: Dynamic Programming}} \\
+  OSE Lab 2019, Prof.\ dr.\ Felix Kubler \\
+  Wouter van der Wielen
+\end{flushleft}
+
+\vspace{5mm}
+
+\noindent\textbf{Problem 1}
+\textbf{(Asset market equilibrium)}
+Each agent $h$ will maximize their utility
+\begin{equation} \label{problem}
+	\max_{\{c_0, ..., c_4\}} U^{h}(c) = \max_{c} \left[ \frac{c_0^{1-\gamma}}{1-\gamma} + \frac{1}{4}\sum_{s=1}^{4} \frac{c_s^{1-\gamma}}{1-\gamma} \right]
+\end{equation}
+
+\noindent over two periods subject to the budget constraint
+\begin{equation}
+	c_0^h = e_0^h - q_1\theta_1^h - q_2\theta_2^h \hspace{20pt} \text{at } t = 0
+\end{equation}
+\noindent and
+\begin{equation}
+	c_s^h = e_s^h + \theta_1^h A_s^1 + \theta_2^h A_s^2 \hspace{20pt} \text{otherwise}
+\end{equation}
+\noindent where $q_i$ the initial price of asset $i$, $e_s^h$ is agent $h$ his endowment (note, $e_0=1$ for both agents), $\theta_i^h$ his holdings of asset $i$ and $A_s^i$ the pay out from asset $i$ in state $s$. Moreover, the following market clearing conditions have to hold:
+\begin{align}
+	\theta_1^1 + \theta_1^2 = 0 \\
+	\theta_2^1 + \theta_2^2 = 0
+\end{align}
+
+We can plug the budget constraints and market clearing conditions 
+directly into \eqref{problem}. Consequently, the First Order Conditions (FOCs) are as follows:
+
+\begin{equation}
+	\frac{\partial U^1}{\partial \theta_1^1} = -q_1(e_0^1 - q_1\theta_1^1 - q_2\theta_2^1)^{-\gamma} + \frac{1}{4}\sum_{s=1}^{4} A_s^1(e_s^1 + \theta_1^1 A_s^1 + \theta_2^1 A_s^2)^{-\gamma} = 0
+\end{equation}
+\begin{equation}
+	\frac{\partial U^1}{\partial \theta_2^1} = -q_2(e_0^1 - q_1\theta_1^1 - q_2\theta_2^1)^{-\gamma} + \frac{1}{4}\sum_{s=1}^{4} A_s^2(e_s^1 + \theta_1^1 A_s^1 + \theta_2^1 A_s^2)^{-\gamma} = 0
+\end{equation}
+\begin{align}
+	\frac{\partial U^2}{\partial \theta_1^2} &= -q_1(e_0^2 - q_1\theta_1^2 - q_2\theta_2^2)^{-\gamma} + \frac{1}{4}\sum_{s=1}^{4} A_s^1(e_s^2 + \theta_1^2 A_s^1 + \theta_2^2 A_s^2)^{-\gamma} \nonumber \\
+	&= -q_1(e_0^2 + q_1\theta_1^1 + q_2\theta_2^1)^{-\gamma} + \frac{1}{4}\sum_{s=1}^{4} A_s^1(e_s^2 - \theta_1^1 A_s^1 - \theta_2^1 A_s^2)^{-\gamma} = 0
+\end{align}
+\begin{align}
+	\frac{\partial U^2}{\partial \theta_2^2} &= -q_2(e_0^2 - q_1\theta_1^2 - q_2\theta_2^2)^{-\gamma} + \frac{1}{4}\sum_{s=1}^{4} A_s^2(e_s^2 + \theta_1^2 A_s^1 + \theta_2^2 A_s^2)^{-\gamma} \nonumber \\
+	&= -q_2(e_0^2 + q_1\theta_1^1 + q_2\theta_2^1)^{-\gamma} + \frac{1}{4}\sum_{s=1}^{4} A_s^2(e_s^2 - \theta_1^1 A_s^1 - \theta_2^1 A_s^2)^{-\gamma} = 0
+\end{align}
+
+\noindent Hence, resulting in a system of 4 equations in 4 unknowns ($q_1$, $q_2$, $\theta_1^1$, $\theta_2^1$)
+
+\end{document}
+
