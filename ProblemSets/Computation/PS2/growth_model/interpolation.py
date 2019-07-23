@@ -16,7 +16,7 @@ import nonlinear_solver_initial as solver
 
 #======================================================================
 
-def adap_sparse_grid(n_agents, iDepth, num_states): ## added zz stochastics
+def adap_sparse_grid(n_agents, iDepth, num_states,zzz): ## added zz stochastics
 
     grid  = TasmanianSG.TasmanianSparseGrid()
 
@@ -29,9 +29,6 @@ def adap_sparse_grid(n_agents, iDepth, num_states): ## added zz stochastics
 
     iDim=n_agents
 
-    refinement_level = 5 #NEW
-    fTol = 1.E-5 #NEW
-
     grid.makeLocalPolynomialGrid(iDim, iOut, iDepth, which_basis, "localp")
     grid.setDomainTransform(ranges)
 
@@ -42,16 +39,23 @@ def adap_sparse_grid(n_agents, iDepth, num_states): ## added zz stochastics
     ##new block for adaptive grid ######################################
 
     for iI in range(iNumP1):
-        aValTemp = 0
+        print("this is iI:", iI)
+        aValTemp = float(0.)
         #aValTemp = solver.initial(aPoints[iI], n_agents)[0]
         for zz in range(num_states): ## added zz stochastics loop
-            aValTemp += (1/num_states) * solver.initial(aPoints[iI], n_agents, zz)[0]
+            print("this is zz:", zz)
+            aValTemp += (1./num_states) * initial(aPoints[iI], n_agents, zz)[0]
+            #print((1./num_states) * initial(aPoints[iI], n_agents, zz)[0])
+            print(aValTemp)
+            #aValTemp = initial(aPoints[iI], n_agents, zz)[0]
         aVals[iI]=aValTemp
+        print(aVals[iI])
 
     grid.loadNeededPoints(aVals)
 
+    print("- State:", zzz)
     for ik in range(refinement_level): #refinement level
-        print("- Refinement level:", ik)
+        print("-- Refinement level:", ik)
         grid.setSurplusRefinement(fTol, 1, "fds")   #use fds
         aPoints = grid.getNeededPoints()
         iNumP1=aPoints.shape[0]
@@ -59,17 +63,27 @@ def adap_sparse_grid(n_agents, iDepth, num_states): ## added zz stochastics
 
         file=open("comparison1.txt", 'w')
         for iI in range(iNumP1):
-            aValTemp = 0
+            print("this is iI:", iI)
+            aValTemp = float(0.)
             #aValTemp = solver.initial(aPoints[iI], n_agents)[0]
             for zz in range(num_states): ## added zz stochastics loop
-                aValTemp += (1/num_states) * solver.initial(aPoints[iI], n_agents, zz)[0]
+                print("this is zz:", zz)
+                aValTemp += (1./num_states) * initial(aPoints[iI], n_agents, zz)[0]
+                #aValTemp = (1/num_states) * initial(aPoints[iI], n_agents, zz)[0]
+                print(aValTemp)
             aVals[iI]=aValTemp
+            print(aVals[iI])
             v=aVals[iI]*np.ones((1,1))
             to_print=np.hstack((aPoints[iI].reshape(1,n_agents), v))
             np.savetxt(file, to_print, fmt='%2.16f')
 
         file.close()
         grid.loadNeededPoints(aVals)
+
+    #if zzz == 0:
+        #grid.plotPoints2D() ## THIS WORKS HUURAY
+        #grid.plotResponse2D()
+
 
     ##uptil here #######################################################
 

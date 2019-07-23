@@ -30,9 +30,6 @@ def adap_sparse_grid_iter(n_agents, iDepth, valold, itr,numits,num_states,zzz): 
     iDim=n_agents
     iOut=1
 
-    refinement_level = 5 #NEW
-    fTol = 1.E-5 #NEW
-
     grid.makeLocalPolynomialGrid(iDim, iOut, iDepth, which_basis, "localp")
     grid.setDomainTransform(ranges)
 
@@ -43,16 +40,22 @@ def adap_sparse_grid_iter(n_agents, iDepth, valold, itr,numits,num_states,zzz): 
 
     ##new block for adaptive grid ######################################
     for iI in range(iNumP1):
-        aValTemp = 0
+        print("this is iI:", iI)
+        aValTemp = float(0.)
         #aValTemp = solveriter.iterate(aPoints[iI], n_agents, valold)[0]
         for zz in range(num_states): ## added zz stochastics loop
-            aValTemp += (1/num_states) * solveriter.iterate(aPoints[iI], n_agents, valold[zz], zz)[0]
+            print("this is zz:", zz)
+            aValTemp += (1./num_states) * iterate(aPoints[iI], n_agents, valold[zz], zz)[0]
+            #aValTemp = (1/num_states) * iterate(aPoints[iI], n_agents, valold[zz], zz)[0]
+            print(aValTemp)
         aVals[iI]=aValTemp
+        print(aVals[iI])
 
     grid.loadNeededPoints(aVals)
 
+    print("- State:", zzz)
     for ik in range(refinement_level): #refinement level
-        print("- Refinement level:", ik)
+        print("-- Refinement level:", ik)
         grid.setSurplusRefinement(fTol, 1, "fds")   #use fds
         aPoints = grid.getNeededPoints()
         iNumP1=aPoints.shape[0]
@@ -60,11 +63,16 @@ def adap_sparse_grid_iter(n_agents, iDepth, valold, itr,numits,num_states,zzz): 
 
         file=open("comparison1.txt", 'w')
         for iI in range(iNumP1):
-            aValTemp = 0
+            print("this is iI:", iI)
+            aValTemp = float(0.)
             #aValTemp = solveriter.iterate(aPoints[iI], n_agents, valold)[0]
             for zz in range(num_states): ## added zz stochastics loop
-                aValTemp += (1/num_states) * solveriter.iterate(aPoints[iI], n_agents, valold[zz], zz)[0]
+                print("this is zz:", zz)
+                #aValTemp += (1/num_states) * iterate(aPoints[iI], n_agents, valold[zz], zz)[0]
+                aValTemp += (1./num_states) * iterate(aPoints[iI], n_agents, valold[zz], zz)[0]
+                print(aValTemp)
             aVals[iI]=aValTemp
+            print(aVals[iI])
             v=aVals[iI]*np.ones((1,1))
             to_print=np.hstack((aPoints[iI].reshape(1,n_agents), v))
             np.savetxt(file, to_print, fmt='%2.16f')
@@ -74,17 +82,26 @@ def adap_sparse_grid_iter(n_agents, iDepth, valold, itr,numits,num_states,zzz): 
         file.close()
         grid.loadNeededPoints(aVals)
 
+    #if zzz == 1:
+    #    grid.plotPoints2D() ## THIS WORKS HUURAY
+    #    grid.plotResponse2D()
+
     f=open("grid_iter.txt", 'w')
     np.savetxt(f, aPoints, fmt='% 2.16f')
     f.close()
 
-    if itr == numits-1 and zzz == num_states-1:
+    if itr == numits-1:
+        grid.plotPoints2D()
+        grid.plotResponse2D()
+
+    #if itr == numits-1 and zzz == num_states-1:
+    #if itr == 0 and zzz == 2:
         #grid2 = TasmanianSG.TasmanianSparseGrid()
         #grid2.makeLocalPolynomialGrid(iDim, iOut, refinement_level+iDepth, which_basis, "localp")
         #a = grid2.getNumPoints()
         #print "   a fix sparse grid of level ", refinement_level+iDepth, " would consist of " ,a, " points"
 
-        grid.plotPoints2D()
+        #grid.plotPoints2D()
 
         #from matplotlib import pyplot as plt
         #plt.figure(figsize=(4, 4))

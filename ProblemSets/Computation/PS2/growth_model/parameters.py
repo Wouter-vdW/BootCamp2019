@@ -22,6 +22,9 @@ which_basis = 1 #linear basis function (2: quadratic local basis)
 numstart = 0   # which is iteration to start (numstart = 0: start from scratch, number=/0: restart)
 numits = 10    # which is the iteration to end
 
+refinement_level = 3 #NEW
+fTol = 1.E-5 #NEW
+
 # How many random points for computing the errors
 No_samples = 1000
 
