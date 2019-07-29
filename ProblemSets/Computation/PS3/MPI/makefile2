@@ -1,0 +1,22 @@
+#######################################################################
+
+all : broadcast.exe allreduce.exe scatter.exe pi.exe
+
+#######################################################################
+
+broadcast.exe: broadcast.cpp
+	mpicxx -O3 broadcast.cpp -o broadcast.exe
+
+allreduce.exe: allreduce.cpp
+	mpicxx -O3 allreduce.cpp -o allreduce.exe
+
+scatter.exe: scatter.cpp
+	mpicxx -O3 scatter.cpp -o scatter.exe	
+
+pi.exe: pi.cpp	
+	mpicxx -O3 pi.cpp -o pi.exe
+
+#######################################################################
+
+clean :
+	rm -f *.exe
